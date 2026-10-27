@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewOutlineProvider
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -21,12 +22,23 @@ class Tile(
 )
 
 object Ui {
-    /** Gentle zoom when a view gets D-pad focus (the white ring comes from the drawable). */
-    fun focusScale(v: View, scale: Float = 1.08f) {
+    /** Zoom and lift when a view gets D-pad focus (the white ring comes from the glass drawable). */
+    fun focusScale(v: View, scale: Float = 1.1f) {
+        val d = v.resources.displayMetrics.density
         v.onFocusChangeListener = View.OnFocusChangeListener { view, hasFocus ->
             val s = if (hasFocus) scale else 1f
-            view.animate().scaleX(s).scaleY(s).setDuration(140).start()
+            view.animate()
+                .scaleX(s).scaleY(s)
+                .translationZ(if (hasFocus) 14f * d else 0f)
+                .setDuration(160)
+                .start()
         }
+    }
+
+    /** Give any view the liquid-glass background and a floating shadow. */
+    fun glass(v: View, radiusDp: Float, elevationDp: Float = 4f) {
+        v.background = LiquidGlassDrawable(v, radiusDp)
+        glassShadow(v, radiusDp, elevationDp)
     }
 }
 
@@ -60,6 +72,11 @@ class TileAdapter(
         }
         vh.art.clipToOutline = true
 
+        // Liquid glass: frosted backdrop + edge light, plus a glossy sheen over the artwork
+        Ui.glass(v, 18f, 6f)
+        (v as FrameLayout).foreground =
+            GlassSheenDrawable(3f, 15f, parent.resources.displayMetrics.density)
+
         Ui.focusScale(v)
         return vh
     }
@@ -81,7 +98,7 @@ class TileAdapter(
             h.label.text = t.label
         }
 
-        val s = if (h.itemView.isFocused) 1.08f else 1f
+        val s = if (h.itemView.isFocused) 1.1f else 1f
         h.itemView.scaleX = s
         h.itemView.scaleY = s
         h.itemView.contentDescription = t.label

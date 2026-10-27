@@ -11,6 +11,7 @@ import android.content.pm.ResolveInfo
 import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Shader
+import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -41,6 +42,12 @@ class MainActivity : Activity() {
         setContentView(R.layout.activity_main)
         prefs = getSharedPreferences("launcher", Context.MODE_PRIVATE)
 
+        // Vivid wallpaper behind everything (the glass surfaces sample this same image)
+        window.setBackgroundDrawable(BitmapDrawable(resources, Wallpaper.bitmap()).apply {
+            setFilterBitmap(true)
+            setDither(true)
+        })
+
         appsRow = findViewById(R.id.appsRow)
         gamesRow = findViewById(R.id.gamesRow)
         appsRow.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -70,9 +77,21 @@ class MainActivity : Activity() {
             google.invalidate()
         }
 
+        Ui.glass(google, 100f)
+        Ui.glass(search, 100f)
+        Ui.glass(settings, 100f)
         Ui.focusScale(google)
         Ui.focusScale(search)
         Ui.focusScale(settings)
+
+        // Glass samples the wallpaper behind it, so redraw tiles while a row scrolls
+        val redraw = object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
+                for (i in 0 until rv.childCount) rv.getChildAt(i).invalidate()
+            }
+        }
+        appsRow.addOnScrollListener(redraw)
+        gamesRow.addOnScrollListener(redraw)
         google.setOnClickListener { openGoogle() }
         search.setOnClickListener { openSearch() }
         settings.setOnClickListener { openSettings() }
