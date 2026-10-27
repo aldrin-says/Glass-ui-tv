@@ -4,6 +4,9 @@ on:
   push:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,3 +29,12 @@ jobs:
         with:
           name: SkyGlassLauncher-apk
           path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Publish APK as a Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk GlassLauncher.apk
+          gh release create "v1.0-${{ github.run_number }}" GlassLauncher.apk \
+            --title "Glass Launcher APK" \
+            --notes "Download GlassLauncher.apk and install it on your TV box."
