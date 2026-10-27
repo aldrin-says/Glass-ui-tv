@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Glass Launcher</string>
+    <string name="section_apps">Apps</string>
+    <string name="section_games">Games</string>
+    <string name="search">Search</string>
+    <string name="add_app">Add app</string>
+    <string name="add_app_title">Add an app to your home screen</string>
+    <string name="more_games">More games</string>
+    <string name="iptv">IPTV</string>
+    <string name="choose_iptv">Choose your IPTV app</string>
+    <string name="remove">Remove</string>
+    <string name="remove_message">It stays installed. This only removes it from the home screen.</string>
+    <string name="already_added">Already on your home screen</string>
+    <string name="cant_open">Can\'t open that app</string>
+</resources>
